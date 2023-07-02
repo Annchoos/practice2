@@ -1,27 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace practice
 {
-    public partial class Form1 : Form
+    public partial class Main : Form
     {
         private string selectedFunction;
-        private double angle;
         private bool isDegrees;
 
-
-        public Form1()
+        public Main()
         {
             InitializeComponent();
             comboBox1.Items.Add("sin");
@@ -54,7 +42,7 @@ namespace practice
                     "\r\nСинусоиды имеют широкое применение в науке и инженерии. Они используются для описания колебаний и волн, таких как звук, электромагнитные волны и акустические сигналы. " +
                     "Синусы также используются в математическом моделировании и анализе данных, в физике, музыке, электротехнике, сигнальной обработке и многих других областях.";
             }
-            else if (selectedItem == "cos")
+            if (selectedItem == "cos")
             {
                 textBox1.Clear();
                 textBox1.Text = "Косинус (от латинского слова \"cosinus\") - это математическая функция, которая также относится к тригонометрическим функциям, подобно синусу. " +
@@ -66,7 +54,7 @@ namespace practice
                     "\r\nОрдината: косинус принимает значение 1 при аргументе 0, т.е. cos(0) = 1.\r\nФазовый сдвиг: косинус имеет фазовый сдвиг на π/2 радиан или 90 градусов относительно синуса. Это означает, что графики синуса и косинуса сдвинуты друг относительно друга по фазе." +
                     "\r\nПрименение косинуса:\r\nКосинус также широко применяется в науке, инженерии и других областях. Он используется для моделирования гармонических колебаний, волн, осцилляций и других процессов, аналогично синусу. Косинус также находит применение в математическом моделировании, физике, электротехнике, музыке, телекоммуникациях, обработке сигналов и других дисциплинах.";
             }
-            else if (selectedItem == "tg")
+            if (selectedItem == "tg")
             {
                 textBox1.Clear();
                 textBox1.Text = "Тангенс (от латинского слова \"tangens\") - это математическая функция, которая также относится к тригонометрическим функциям, вместе с синусом и косинусом. " +
@@ -81,7 +69,7 @@ namespace practice
                     "\r\nКомплексные числа: тангенс может быть выражен через комплексные числа и использоваться для выполнения операций с комплексными числами." +
                     "\r\nФизика: тангенс применяется в физике для анализа движения, электрических цепей, осцилляций и других явлений.";
             }
-            else if (selectedItem == "ctg")
+            if (selectedItem == "ctg")
             {
                 textBox1.Clear();
                 textBox1.Text = "Котангенс (от латинского слова \"cotangens\" или \"cotangent\") - это тригонометрическая функция, обратная к тангенсу. " +
@@ -98,73 +86,63 @@ namespace practice
             }
         }
 
-        private void FunctionCheckBox_CheckedChanged(object sender, EventArgs e)
-        {
-            System.Windows.Forms.CheckBox checkBox = (System.Windows.Forms.CheckBox)sender;
-
-            if (checkBox.Checked)
-            {
-                if (checkBox.Name == "SinCheckBox" || checkBox.Name == "CosCheckBox" ||
-                    checkBox.Name == "TgCheckBox" || checkBox.Name == "CtgCheckBox")
-                {
-                    selectedFunction = checkBox.Text;
-                }
-            }
-        }
-
-        private void UnitsRadioButton_CheckedChanged(object sender, EventArgs e)
+        private void FunctionCheckBox_CheckedChanged()
         {
 
-            System.Windows.Forms.RadioButton radioButton = (System.Windows.Forms.RadioButton)sender;
-            if (radioButton.Checked)
-            {
-                if (radioButton.Name == "DegreesRadioButton")
-                {
-                    isDegrees = true;
-                }
-                else if (radioButton.Name == "RadiansRadioButton")
-                {
-                    isDegrees = false;
-                }
-            }
-            SinCheckBox.CheckedChanged += FunctionCheckBox_CheckedChanged;
-            CosCheckBox.CheckedChanged += FunctionCheckBox_CheckedChanged;
-            TgCheckBox.CheckedChanged += FunctionCheckBox_CheckedChanged;
-            CtgCheckBox.CheckedChanged += FunctionCheckBox_CheckedChanged;
-            DegreesRadioButton.CheckedChanged += UnitsRadioButton_CheckedChanged;
-            RadiansRadioButton.CheckedChanged += UnitsRadioButton_CheckedChanged;
-            CalculateButton.Click += CalculateButton_Click;
+            if (SinCheckBox.Checked) selectedFunction = SinCheckBox.Text;
+            if (CosCheckBox.Checked) selectedFunction = CosCheckBox.Text;
+            if (TgCheckBox.Checked) selectedFunction = TgCheckBox.Text;
+            if (CtgCheckBox.Checked) selectedFunction = CtgCheckBox.Text;
 
         }
 
-        private double CalculateFunction(string functionName, double angle)
+		private void UnitsRadioButton_CheckedChanged()
         {
-            switch (functionName)
-            {
-                case "sin":
-                    return Math.Sin(angle);
-                case "cos":
-                    return Math.Cos(angle);
-                case "tg":
-                    return Math.Tan(angle);
-                case "ctg":
-                    return 1 / Math.Tan(angle);
-                default:
-                    throw new ArgumentException("Invalid function name.");
-            }
+            isDegrees = DegreesRadioButton.Checked;
+		}
+
+		private double CalculateFunction(string functionName, double angle)
+        {
+            if(functionName == "sin") return Math.Sin(angle);
+            if (functionName == "cos") return Math.Cos(angle);
+            if (functionName == "tg") return Math.Tan(angle);
+            if (functionName == "ctg") return 1 / Math.Tan(angle);
+            return double.NaN;
         }
 
         private double ConvertToRadians(double degrees)
         {
             return degrees * Math.PI / 180;
         }
-        private void CalculateButton_Click(object sender, EventArgs e)
-        {
+        
+		private void Main_Load(object sender, EventArgs e)
+		{
+
+		}
+
+		private void DegreesRadioButton_CheckedChanged(object sender, EventArgs e)
+		{
+
+		}
+
+		private void RadiansRadioButton_CheckedChanged(object sender, EventArgs e)
+		{
+
+		}
+
+		private void CalculateButton_Click_1(object sender, EventArgs e)
+		{
+            FunctionCheckBox_CheckedChanged();
+            UnitsRadioButton_CheckedChanged();
             if (double.TryParse(AngleTextBox.Text, out double angle))
             {
                 double angleInRadians = isDegrees ? ConvertToRadians(angle) : angle;
                 double result = CalculateFunction(selectedFunction, angleInRadians);
-
+                if (result == double.NaN)
+                {
+                    MessageBox.Show("Произошла ошибка");
+                    return;
+                }
 
                 Chart1.Series.Clear();
                 Chart1.ChartAreas.Clear();
@@ -184,11 +162,10 @@ namespace practice
 
                 Chart1.Update();
             }
-        
             else
             {
                 MessageBox.Show("Invalid angle value. Please enter a valid numeric value.");
             }
         }
-    }
+	}
 }
