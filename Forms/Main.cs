@@ -1,13 +1,14 @@
-﻿using System;
+﻿using practice.DTOs;
+using practice.Services;
+using System;
 using System.Windows.Forms;
-using System.Windows.Forms.DataVisualization.Charting;
 
 namespace practice
 {
     public partial class Main : Form
     {
-        private string selectedFunction;
-        private bool isDegrees;
+        private CheckBoxCornersDTO checkBoxCornersDTO { get; set; }
+        private DrawChartDTO drawChartDTO { get; set; }
 
         public Main()
         {
@@ -18,6 +19,20 @@ namespace practice
             comboBox1.Items.Add("ctg");
 
             comboBox1.SelectedIndexChanged += comboBox1_SelectedIndexChanged;
+
+            checkBoxCornersDTO = new CheckBoxCornersDTO
+            {
+                SinCheckBox = SinCheckBox,
+                CosCheckBox = CosCheckBox,
+                TgCheckBox = TgCheckBox,
+                CtgCheckBox = CtgCheckBox
+            };
+            drawChartDTO = new DrawChartDTO
+            {
+                Chart1 = Chart1,
+                AngleTextBox = AngleTextBox,
+                DegreesRadioButton = DegreesRadioButton
+            };
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -86,35 +101,6 @@ namespace practice
             }
         }
 
-        private void FunctionCheckBox_CheckedChanged()
-        {
-
-            if (SinCheckBox.Checked) selectedFunction = SinCheckBox.Text;
-            if (CosCheckBox.Checked) selectedFunction = CosCheckBox.Text;
-            if (TgCheckBox.Checked) selectedFunction = TgCheckBox.Text;
-            if (CtgCheckBox.Checked) selectedFunction = CtgCheckBox.Text;
-
-        }
-
-		private void UnitsRadioButton_CheckedChanged()
-        {
-            isDegrees = DegreesRadioButton.Checked;
-		}
-
-		private double CalculateFunction(string functionName, double angle)
-        {
-            if(functionName == "sin") return Math.Sin(angle);
-            if (functionName == "cos") return Math.Cos(angle);
-            if (functionName == "tg") return Math.Tan(angle);
-            if (functionName == "ctg") return 1 / Math.Tan(angle);
-            return double.NaN;
-        }
-
-        private double ConvertToRadians(double degrees)
-        {
-            return degrees * Math.PI / 180;
-        }
-        
 		private void Main_Load(object sender, EventArgs e)
 		{
 
@@ -132,40 +118,8 @@ namespace practice
 
 		private void CalculateButton_Click_1(object sender, EventArgs e)
 		{
-            FunctionCheckBox_CheckedChanged();
-            UnitsRadioButton_CheckedChanged();
-            if (double.TryParse(AngleTextBox.Text, out double angle))
-            {
-                double angleInRadians = isDegrees ? ConvertToRadians(angle) : angle;
-                double result = CalculateFunction(selectedFunction, angleInRadians);
-                if (result == double.NaN)
-                {
-                    MessageBox.Show("Произошла ошибка");
-                    return;
-                }
-
-                Chart1.Series.Clear();
-                Chart1.ChartAreas.Clear();
-
-                ChartArea chartArea = new ChartArea();
-                Chart1.ChartAreas.Add(chartArea);
-
-                Series series = new Series(selectedFunction);
-                series.ChartType = SeriesChartType.Line;
-                Chart1.Series.Add(series);
-
-                for (double x = 0; x <= 360; x += 1)
-                {
-                    double y = CalculateFunction(selectedFunction, ConvertToRadians(x));
-                    series.Points.AddXY(x, y);
-                }
-
-                Chart1.Update();
-            }
-            else
-            {
-                MessageBox.Show("Invalid angle value. Please enter a valid numeric value.");
-            }
+            var chartManager = new ChartManager(checkBoxCornersDTO);
+            chartManager.DrawChart(drawChartDTO);
         }
 	}
 }
